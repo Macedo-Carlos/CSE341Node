@@ -12,7 +12,7 @@ const app = express()
 const path = require('path')
 const PORT = process.env.PORT || 5000
 
-console.log(process.env.TIMES)
+console.log(process.env.SECRET)
 
 app
   .use(express.static(path.join(__dirname, 'public')))
