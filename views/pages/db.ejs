@@ -11,11 +11,19 @@
 <div class="container">
 <h2>Database Results</h2>
 
-<ul>
-    <% results.forEach(function(r) { %>
-        <li><%= r.id %> - <%= r.name %></li>
-    <% }); %>
-</ul>
+<table>
+  <tr>
+    <th>Id</th>
+    <th>Data</th>
+  </tr>
+  <% results.forEach( r => { %>
+  <tr>
+    <td><%= r.id %></td>
+    <td><%= r.name %></td>
+  </tr>
+  <% }); %>
+</table>
+
 
 </div>
 
