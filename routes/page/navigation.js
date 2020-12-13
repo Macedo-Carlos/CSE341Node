@@ -3,6 +3,7 @@ const dbUrl = process.env.DATABASE_URL || connectionUrl
 const express = require('express')
 const router = express.Router()
 const bcrypt = require('bcrypt')
+const request = require('request')
 const { Pool } = require('pg');
 const { response } = require('express')
 const pool = new Pool({
@@ -27,25 +28,12 @@ router
             })
         }
     })
-    .get('/db', async (req, res) => {
-    try {
-        const client = await pool.connect();
-        const result = await client.query('SELECT * FROM test_table');
-        const results = { 'results': (result) ? result.rows : null};
-        res.render('pages/db', results );
-        client.release();
-    } catch (err) {
-        console.error(err);
-        res.send("Error " + err); 
-    }
-    })
     .get('/login', checkNotAuth, (req, res) => {
         res.render('pages/login') 
     })
     .post('/login', checkNotAuth, async (req, res, next) => {
         const userName = req.body.userName
         const userPassword = req.body.userPassword
-        console.log(req.body)
         try {
             const client = await pool.connect()
             const results = await client.query('SELECT * FROM users WHERE user_name = $1', [userName])
@@ -81,25 +69,45 @@ router
         req.session.destroy()
         res.status(200).send('User logged out')
     })
+    .get('/users', checkAuth, async (req, res) => {
+        const results = await getUsersList()
+        res.render('pages/users', {
+                results: results
+        })
+    })
+    .post('/users/register', checkAuth, async (req, res) => {
+        const userName = req.body.userName
+        const userPassword = req.body.userPassword
+        const hashedPassword = await bcrypt.hash(userPassword, 10)
+        try {
+            const client = await pool.connect()
+            const result = await client.query('INSERT INTO users (user_name, user_password, user_is_admin) VALUES ($1, $2, $3) RETURNING id', [userName, hashedPassword, 'false'])
+            client.release()
+            res.send(result.rows)
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({ message: 'The user could not be created'})
+        }
+    }) //Database tester
+    .get('/db', async (req, res) => {
+    try {
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM test_table');
+        const results = { 'results': (result) ? result.rows : null};
+        res.render('pages/db', results );
+        client.release();
+    } catch (err) {
+        console.error(err);
+        res.send("Error " + err); 
+    }
+    }) // Password tester
     .get('/password_tester', async (req, res) => {
         const hashedPassword = await bcrypt.hash('password', 10)
         const verified = await bcrypt.compare('password', hashedPassword)
         console.log(verified)
         res.send(verified)
     })
-    .post('/query_tester', async (req, res) => {
-        const userName = req.body.userName
-        const userPassword = req.body.userPassword
-        const hashedPassword = await bcrypt.hash(userPassword, 10)
-        try {
-            const client = await pool.connect()
-            const results = await client.query('INSERT INTO users (user_name, user_password, user_is_admin) VALUES ($1, $2, $3) RETURNING id', [userName, hashedPassword, 'false'])
-            client.release()
-            res.send(results.rows)
-        } catch (error) {
-            res.status(500).json({ message: 'The user could not be created'})
-        }
-    })
+    
 
 function checkAuth(req, res, next) {
     if (!req.session.isLoggedIn || req.session.isLoggedIn === 'false') {
@@ -117,4 +125,31 @@ function checkNotAuth(req, res, next) {
     }
 }
 
+async function getUsersList() {
+    try {
+        const client = await pool.connect()
+        const results = await client.query('SELECT * FROM users')
+        client.release()
+        if (results.rowCount === 0) {
+            res.send('There are no users registered')
+        }
+        return results.rows
+    } catch (err) {
+        console.log(err)
+        res.status(500).json({ message: 'The user list is not available. Please try again.'})
+    }
+}
+
 module.exports = router
+
+
+
+// function googleAPI(req, res) {
+//     search = req.body.search
+//     select = req.body.select
+//     request("https://www.googleapis.com/books/v1/volumes?q=" + select + search , { json: true }, (err, response, data) => {
+//       if (err) { return console.log(err) }
+//       console.log(data)
+//       res.json(data)
+//     })
+// }

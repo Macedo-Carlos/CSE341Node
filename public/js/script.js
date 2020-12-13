@@ -29,3 +29,28 @@ async function logoutUser() {
         console.error(error)
     }
 }
+
+async function registerUser() {
+    const userName = document.getElementById('userName').value
+    const userPassword = document.getElementById('userPassword').value
+    let userData = {
+        userName: userName,
+        userPassword: userPassword
+    }
+    let response = await fetch('/users/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+    })
+    if (response.ok) {
+    let result = await response.json();
+
+    console.log(result)
+    } else {
+        console.log("Something went wrong ")
+        let result = await response.json()
+        console.log(result.message)
+    }
+}
