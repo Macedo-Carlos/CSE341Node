@@ -1,12 +1,3 @@
-// fetch('/logout')
-// .then(response => {
-//     return response.text
-// })
-// .then(message =>{
-//     console.log(message)
-//     window.location.href = '/login'
-// })
-
 async function logoutUser() {
     try {
         const response = await fetch('/logout', {
@@ -33,6 +24,7 @@ async function logoutUser() {
 async function registerUser() {
     const userName = document.getElementById('userName').value
     const userPassword = document.getElementById('userPassword').value
+    const messageBox = document.getElementById('messageBox')
     let userData = {
         userName: userName,
         userPassword: userPassword
