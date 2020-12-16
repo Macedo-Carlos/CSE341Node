@@ -3,23 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
     <title>Login Page</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <form action="/login" method="POST">
-        <div>
-            <label for="userName">User Name</label>
-            <input type="text" name="userName" id="userName" placeholder="Enter your user name here" required>
-        </div>
-        <div>
-            <label for="userPassword">Password</label>
-            <input type="password" name="userPassword" id="userPassword" required>
-        </div>
-        <button type="submit">Login</button>
-    </form>
-        <% if (typeof message !== 'undefined') { %>
-            <div class="message-box"><%= message %></div>
-        <% } %>
+    <header>
+        <h1>Inventory Assistant</h1>
+    </header>
+    <main>
+        <h1>Login</h1>
+        <form action="/login" method="POST">
+            <div>
+                <label for="userName">User Name</label>
+                <input type="text" name="userName" id="userName" placeholder="Enter your user name here" required>
+            </div>
+            <div>
+                <label for="userPassword">Password</label>
+                <input type="password" name="userPassword" id="userPassword" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+            <% if (typeof message !== 'undefined') { %>
+                <div class="message-box"><%= message %></div>
+            <% } %>
+    </main>
 </body>
 </html>

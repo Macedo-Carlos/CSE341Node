@@ -11,9 +11,13 @@
   </header>
   <main>
     <p>Welcome <%= userName %>!</p>
-    <p>Please select your next task</p>
-    <a href="/reconcile">Monitor and reconcile the inventory count</a>
-    <a href="/users">Manage users</a>
+    <p>Please select your next task:</p>
+    <div class="button-box">
+      <a href="/reconcile">Monitor and reconcile the inventory count</a>
+    </div>
+    <div class="button-box">
+      <a href="/users">Manage users</a>
+    </div>
   </main>
   <% include ../partials/footer.ejs %>
 </body>

@@ -83,7 +83,8 @@ router
             const client = await pool.connect()
             const result = await client.query('INSERT INTO users (user_name, user_password, user_is_admin) VALUES ($1, $2, $3) RETURNING id', [userName, hashedPassword, 'false'])
             client.release()
-            res.send(result.rows)
+            const usersTable = await getUsersTable();
+            res.send(usersTable)
         } catch (error) {
             console.log(error)
             res.status(500).json({ message: 'The user could not be created'})
@@ -100,12 +101,6 @@ router
         console.error(err);
         res.send("Error " + err); 
     }
-    }) // Password tester
-    .get('/password_tester', async (req, res) => {
-        const hashedPassword = await bcrypt.hash('password', 10)
-        const verified = await bcrypt.compare('password', hashedPassword)
-        console.log(verified)
-        res.send(verified)
     })
     
 
@@ -138,6 +133,15 @@ async function getUsersList() {
         console.log(err)
         res.status(500).json({ message: 'The user list is not available. Please try again.'})
     }
+}
+
+async function getUsersTable() {
+    const ejs = require('ejs')
+    const results = await getUsersList()
+    let rendered = await ejs.renderFile(__dirname + '/../../views/pages/users_table.ejs', {
+        results: results
+    })
+    return rendered
 }
 
 module.exports = router

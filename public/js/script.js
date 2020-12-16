@@ -37,9 +37,13 @@ async function registerUser() {
         body: JSON.stringify(userData)
     })
     if (response.ok) {
-    let result = await response.json();
-
-    console.log(result)
+        let result = await response.text()
+        let container = document.getElementById('usersContainer')
+        let userNameBox = document.getElementById('userName')
+        let userPasswordBox = document.getElementById('userPassword')
+        userNameBox.value = ""
+        userPasswordBox.value = ""
+        container.innerHTML = result
     } else {
         console.log("Something went wrong ")
         let result = await response.json()
